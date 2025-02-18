@@ -7,6 +7,20 @@ import (
 )
 
 func messageController(c *gin.Context) {
-	setValue()
-	c.JSON(http.StatusOK, getValue())
+
+	err := setValue()
+
+	if err != nil {
+		panic(err)
+	}
+
+	value, err := getValue()
+
+	if err != nil {
+		panic(err)
+	}
+
+	c.JSON(http.StatusOK, value)
+
+	getRedisClient().Close()
 }

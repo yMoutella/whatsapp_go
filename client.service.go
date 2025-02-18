@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/redis/go-redis/v9"
 )
 
@@ -24,38 +26,31 @@ func createClient() *redis.Client {
 func getRedisClient() *redis.Client {
 
 	if redisClient == nil {
+		fmt.Print(redisClient)
 		return createClient()
 	}
 
+	fmt.Print(redisClient)
 	return redisClient
 
 }
 
-func setValue() {
+func setValue() error {
 	client := getRedisClient()
 	ctx := context.Background()
 
 	err := client.Set(ctx, "foo", "bar", 0).Err()
 
-	if err != nil {
-		panic(err)
-	}
-
-	return
+	return err
 
 }
 
-func getValue() string {
+func getValue() (string, error) {
 
 	client := getRedisClient()
 	ctx := context.Background()
+
 	val, err := client.Get(ctx, "foo").Result()
 
-	if err != nil {
-		panic(err)
-	}
-
-	client.Close()
-
-	return val
+	return val, err
 }
