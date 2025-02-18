@@ -8,6 +8,7 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/", challengeController)
+	r.POST("/", messageController)
 	r.Run(":8080")
 
 }
