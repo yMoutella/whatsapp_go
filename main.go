@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,7 +11,11 @@ func main() {
 	r := gin.Default()
 	r.GET("/", challengeController)
 	r.POST("/", messageController)
-	r.Run(":8080")
+	err := r.Run(":8080")
+
+	if err != nil {
+		panic(err)
+	}
 
 	fmt.Printf("Running in port 8080")
 
