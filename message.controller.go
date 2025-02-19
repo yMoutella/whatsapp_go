@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"log"
+	"net/http"
+	"os"
 )
 
 var messageInterface MessageInterface
@@ -27,29 +28,41 @@ func messageController(c *gin.Context) {
 }
 
 func sendMessage() {
-	//GRAPH_API_TOKEN := os.Getenv("GRAPH_API_TOKEN")
-	menu := getMenu(1)
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Printf("Error getting envrioment variable")
+	}
+
+	GRAPH_API_TOKEN := os.Getenv("GRAPH_API_TOKEN")
 
 	var dto dtoMessage
 	dto.createDto(messageInterface)
 
-	_, err := json.Marshal(dto)
+	message := getGoodBye()
+	message.To = dto.PhoneNumber
+
+	jsonData, err := json.Marshal(message)
 
 	if err != nil {
-		panic(err)
+		log.Printf("Error marshaling data: %s", err)
 	}
 
-	resp, err := http.Post("https://graph.facebook.com/v22.0/"+dto.PhoneNumberId+"/messages", "application/json", bytes.NewBuffer([]byte(menu)))
+	req, err := http.NewRequest("POST", "https://graph.facebook.com/v22.0/"+dto.PhoneNumberId+"/messages", bytes.NewBuffer(jsonData))
 
 	if err != nil {
-		panic(err)
+		log.Printf("Error in request: %s", err)
 	}
 
-	data, err := io.ReadAll(resp.Body)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+GRAPH_API_TOKEN)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
 
 	if err != nil {
-		panic(err)
+		log.Printf("Error requesting the client: %s", err)
 	}
 
-	fmt.Printf("resp.Body: %v\n", string(data))
+	fmt.Printf("resp.Body: %v\n", resp)
 }

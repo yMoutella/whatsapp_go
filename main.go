@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +15,7 @@ func main() {
 	err := r.Run(":8080")
 
 	if err != nil {
-		panic(err)
+		log.Printf("Error on run server: %s", err)
 	}
 
 	fmt.Printf("Running in port 8080")
