@@ -20,15 +20,16 @@ func challengeController(c *gin.Context) {
 	}
 
 	token := os.Getenv("WEBHOOK_VERIFY_TOKEN")
+
 	mode := c.Query("hub.mode")
 	challenge := c.Query("hub.challenge")
 	verify_token := c.Query("hub.verify_token")
 
 	if mode == "subscribe" && verify_token == token {
-		c.JSON(http.StatusOK, challenge)
+		c.String(http.StatusOK, challenge)
 		return
 	}
 
-	c.JSON(http.StatusBadRequest, challenge)
+	c.JSON(http.StatusBadRequest, nil)
 
 }
