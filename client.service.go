@@ -45,12 +45,12 @@ func setValue() error {
 
 }
 
-func getValue() (string, error) {
+func getValue(state string) (string, error) {
 
 	client := getRedisClient()
 	ctx := context.Background()
 
-	val, err := client.Get(ctx, "foo").Result()
+	val, err := client.Get(ctx, state).Result()
 
 	return val, err
 }

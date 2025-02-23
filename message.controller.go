@@ -16,7 +16,7 @@ var messageInterface MessageInterface
 func messageController(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&messageInterface); err != nil {
-		panic(err)
+		log.Printf("Error binding json: %s", err)
 	}
 
 	fmt.Println(messageInterface)
@@ -27,19 +27,33 @@ func messageController(c *gin.Context) {
 
 }
 
-func sendMessage() {
+func getToken() (string, error) {
+
 	err := godotenv.Load()
 
-	if err != nil {
-		log.Printf("Error getting envrioment variable")
-	}
-
 	GRAPH_API_TOKEN := os.Getenv("GRAPH_API_TOKEN")
+
+	return GRAPH_API_TOKEN, err
+}
+
+func setDto() dtoMessage {
 
 	var dto dtoMessage
 	dto.createDto(messageInterface)
 
-	message := getGoodBye()
+	return dto
+}
+
+func sendMessage() {
+
+	GRAPH_API_TOKEN, err := getToken()
+
+	if err != nil {
+		log.Printf("Error getting token: %s", err)
+	}
+
+	dto := setDto()
+	message, err := getMenu(dto.List_Reply)
 	message.To = dto.PhoneNumber
 
 	jsonData, err := json.Marshal(message)
