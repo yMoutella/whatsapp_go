@@ -15,3 +15,8 @@ func (dto *dtoMessage) createDto(msgData MessageInterface) {
 	dto.ProfileName = msgData.Entry[0].Changes[0].Value.Contacts[0].Profile.Name
 	dto.List_Reply = msgData.Entry[0].Changes[0].Value.Messages[0].Interactive.List_Reply.Id
 }
+
+func getListReply() string {
+
+	return ""
+}

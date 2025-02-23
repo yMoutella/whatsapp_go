@@ -27,13 +27,17 @@ func messageController(c *gin.Context) {
 
 }
 
-func getToken() (string, error) {
+func getToken() string {
 
 	err := godotenv.Load()
 
 	GRAPH_API_TOKEN := os.Getenv("GRAPH_API_TOKEN")
 
-	return GRAPH_API_TOKEN, err
+	if err != nil {
+		log.Fatalf("Error to get env variable: %s", err)
+	}
+
+	return GRAPH_API_TOKEN
 }
 
 func setDto() dtoMessage {
@@ -44,17 +48,21 @@ func setDto() dtoMessage {
 	return dto
 }
 
-func sendMessage() {
+type RequestPayload struct {
+	jsonData     []byte
+	pathVariable string
+	token        string
+}
 
-	GRAPH_API_TOKEN, err := getToken()
+func createPayload() RequestPayload {
 
-	if err != nil {
-		log.Printf("Error getting token: %s", err)
-	}
-
+	token := getToken()
 	dto := setDto()
 	message, err := getMenu(dto.List_Reply)
-	message.To = dto.PhoneNumber
+
+	if err != nil {
+		log.Fatalf("Error getting menu options: %s", err)
+	}
 
 	jsonData, err := json.Marshal(message)
 
@@ -62,14 +70,26 @@ func sendMessage() {
 		log.Printf("Error marshaling data: %s", err)
 	}
 
-	req, err := http.NewRequest("POST", "https://graph.facebook.com/v22.0/"+dto.PhoneNumberId+"/messages", bytes.NewBuffer(jsonData))
+	return RequestPayload{
+		jsonData:     jsonData,
+		pathVariable: dto.List_Reply,
+		token:        token,
+	}
+
+}
+
+func sendMessage() {
+
+	payload := createPayload()
+
+	req, err := http.NewRequest("POST", "https://graph.facebook.com/v22.0/"+payload.pathVariable+"/messages", bytes.NewBuffer(payload.jsonData))
 
 	if err != nil {
 		log.Printf("Error in request: %s", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", "Bearer "+GRAPH_API_TOKEN)
+	req.Header.Set("Authorization", "Bearer "+payload.token)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
