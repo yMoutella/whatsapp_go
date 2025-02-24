@@ -48,6 +48,33 @@ func setDto() dtoMessage {
 	return dto
 }
 
+type State struct {
+	state      string
+	lastUpdate string
+	isManual   bool
+}
+
+func getOpt(dto dtoMessage) string {
+	dbState, err := getState(dto.PhoneNumber)
+
+	if err != nil {
+		log.Fatalf("Error on getting state: %s", err)
+	}
+
+	var state State
+	json.Unmarshal([]byte(dbState), &state)
+
+	if state.isManual {
+		return "0"
+	}
+
+	if dto.List_Reply == "" {
+		dto.List_Reply = "1"
+	}
+
+	return dto.List_Reply
+}
+
 type RequestPayload struct {
 	jsonData     []byte
 	pathVariable string
@@ -56,9 +83,15 @@ type RequestPayload struct {
 
 func createPayload() RequestPayload {
 
-	token := getToken()
 	dto := setDto()
-	message, err := getMenu(dto.List_Reply)
+	opt := getOpt(dto)
+
+	if opt == "0" {
+		return RequestPayload{}
+	}
+
+	token := getToken()
+	message, err := getMenu(opt)
 
 	if err != nil {
 		log.Fatalf("Error getting menu options: %s", err)
@@ -81,6 +114,9 @@ func createPayload() RequestPayload {
 func sendMessage() {
 
 	payload := createPayload()
+	if payload.jsonData == nil {
+		return
+	}
 
 	req, err := http.NewRequest("POST", "https://graph.facebook.com/v22.0/"+payload.pathVariable+"/messages", bytes.NewBuffer(payload.jsonData))
 
