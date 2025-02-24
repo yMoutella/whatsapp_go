@@ -32,7 +32,6 @@ func getRedisClient() *redis.Client {
 		return createClient()
 	}
 
-	fmt.Print(redisClient)
 	return redisClient
 
 }

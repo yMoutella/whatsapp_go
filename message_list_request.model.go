@@ -4,7 +4,6 @@ type Message_List_Request struct {
 	Messaging_Product string `json:"messaging_product"`
 	To                string `json:"to"`
 	Type              string `json:"type"`
-	Text              Text   `json:"text"`
 	Interactive       struct {
 		Type   string `json:"type"`
 		Header struct {

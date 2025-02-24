@@ -72,6 +72,8 @@ func getOpt(dto dtoMessage) string {
 		dto.List_Reply = "1"
 	}
 
+	//CORRECT JSONDATA, IS GETTING BODY FROM SIMPLE MESSAGE
+
 	return dto.List_Reply
 }
 
@@ -93,6 +95,8 @@ func createPayload() RequestPayload {
 	token := getToken()
 	message, err := getMenu(opt)
 
+	message.To = dto.PhoneNumber
+
 	if err != nil {
 		log.Fatalf("Error getting menu options: %s", err)
 	}
@@ -105,7 +109,7 @@ func createPayload() RequestPayload {
 
 	return RequestPayload{
 		jsonData:     jsonData,
-		pathVariable: dto.List_Reply,
+		pathVariable: dto.PhoneNumberId,
 		token:        token,
 	}
 
