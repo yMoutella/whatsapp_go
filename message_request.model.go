@@ -1,5 +1,9 @@
 package main
 
+type MessageType interface {
+	Message_List_Request | Message_Simple_Request
+}
+
 type Message_List_Request struct {
 	Messaging_Product string `json:"messaging_product"`
 	To                string `json:"to"`
@@ -24,6 +28,13 @@ type Message_List_Request struct {
 			} `json:"sections"`
 		} `json:"action"`
 	} `json:"interactive"`
+}
+
+type Message_Simple_Request struct {
+	Messaging_Product string `json:"messaging_product"`
+	To                string `json:"to"`
+	Type              string `json:"type"`
+	Text              Text   `json:"text"`
 }
 
 type Text struct {
