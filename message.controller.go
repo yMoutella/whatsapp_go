@@ -23,7 +23,8 @@ func messageController(c *gin.Context) {
 		"status":  200,
 	})
 
-	sendMessage()
+	go sendMessage()
+	return
 
 }
 
