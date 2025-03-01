@@ -54,6 +54,8 @@ func sendMessage() {
 		log.Printf("Error in request: %s", err)
 	}
 
+	fmt.Printf("\n\n%s\n\n", payload)
+
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+payload.token)
 
@@ -65,8 +67,7 @@ func sendMessage() {
 	}
 
 	if resp.Status != "200" {
-		log.Fatalf("Status not good received from facebook: %s", resp.Status)
-		return
+		log.Printf("Status not good received from facebook: %s", resp.Status)
 	}
 
 	fmt.Printf("resp.Body: %v\n", resp)

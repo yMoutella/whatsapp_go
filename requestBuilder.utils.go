@@ -83,6 +83,6 @@ func buildPayload(dto dtoMessage) RequestPayload {
 	return RequestPayload{
 		jsonData:     jsonData,
 		token:        token,
-		pathVariable: dto.PhoneNumber,
+		pathVariable: dto.PhoneNumberId,
 	}
 }
