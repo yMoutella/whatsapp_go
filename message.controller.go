@@ -18,7 +18,10 @@ func messageController(c *gin.Context) {
 
 	fmt.Println(messageInterface)
 
-	c.Status(200)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok",
+		"status":  200,
+	})
 
 	sendMessage()
 
